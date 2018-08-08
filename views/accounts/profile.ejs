@@ -1,0 +1,15 @@
+<% include ../partials/header %>
+
+    <div class="container" id="profile">
+        <div class="row">
+            <div class="col-sm-6 col-md-4">
+                <img class="img-circle img-responsive img-center" src="<%= user.profile.picture %>" alt="">
+                <br />
+                <p>Name: <%= user.profile.name %></p>
+                <p>Emai: <%= user.email %></p>
+                <p>Address: <%= user.address %></p>
+            </div>
+        </div>
+    </div>
+
+<% include ../partials/footer %>

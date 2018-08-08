@@ -8,14 +8,12 @@ body {
     position: absolute;
 }
 
-#signup{
-    margin-top: 40px;
+#navbar {
+    position: relative;
+
 }
+
 
 #title {
     text-align: center;
-}
-
-#alert {
-    margin-top: 20px;
 }

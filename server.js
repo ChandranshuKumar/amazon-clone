@@ -6,6 +6,7 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const flash = require("express-flash");
 const MongoStore = require("connect-mongo")(session);
+const passport = require("passport");
 
 const User = require("./models/user");
 const secret = require('./config/secret');
@@ -30,7 +31,13 @@ app.use(session({
     store: new MongoStore({ url: secret.database, autoReconnect: true})
 }));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
 app.set("view engine", "ejs");
+app.use(function(req, res, next){
+    res.locals.user = req.user;
+    next();
+});
 
 const mainRoutes = require("./routes/main");
 const userRoutes = require("./routes/user");
