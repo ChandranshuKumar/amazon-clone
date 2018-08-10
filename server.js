@@ -49,9 +49,11 @@ app.use((req, res, next) => {
 const mainRoutes = require("./routes/main");
 const userRoutes = require("./routes/user");
 const adminRoutes = require("./routes/admin");
+const apiRoutes = require("./api/api");
 app.use(mainRoutes);
 app.use(userRoutes);
 app.use(adminRoutes);
+app.use("/api", apiRoutes);
 
 const port = process.env.PORT || 3000;
 app.listen(port, (err) => {
