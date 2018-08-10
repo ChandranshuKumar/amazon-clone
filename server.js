@@ -8,13 +8,13 @@ const flash = require("express-flash");
 const MongoStore = require("connect-mongo")(session);
 const passport = require("passport");
 
-const User = require("./models/user");
 const secret = require('./config/secret');
+const User = require("./models/user");
+const Category = require("./models/category");
 
 const app = express();
 
-const dbURL = secret.database;
-mongoose.connect(dbURL, { useNewUrlParser: true }, (err) => {
+mongoose.connect(secret.database, { useNewUrlParser: true }, (err) => {
     if (err) return console.log(err);
     else return console.log(`Connected to Database`);
 });
@@ -38,11 +38,20 @@ app.use(function(req, res, next){
     res.locals.user = req.user;
     next();
 });
+app.use((req, res, next) => {
+    Category.find({}, (err, categories) => {
+        if(err) return next(err);
+        res.locals.categories = categories;
+        next();
+    });
+});
 
 const mainRoutes = require("./routes/main");
 const userRoutes = require("./routes/user");
+const adminRoutes = require("./routes/admin");
 app.use(mainRoutes);
 app.use(userRoutes);
+app.use(adminRoutes);
 
 const port = process.env.PORT || 3000;
 app.listen(port, (err) => {

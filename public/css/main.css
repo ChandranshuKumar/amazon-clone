@@ -13,6 +13,10 @@ body {
 
 }
 
+#home {
+    margin-top: -2%;
+}
+
 #title {
     text-align: center;
 }
