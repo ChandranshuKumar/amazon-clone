@@ -19,7 +19,7 @@ router.get("/:name", (req, res, next) => {
                 product.category = category._id;
                 product.name = faker.commerce.productName();
                 product.price = faker.commerce.price();
-                product.image = faker.image.imageUrl();
+                product.image = faker.random.image();
 
                 product.save();
             }
