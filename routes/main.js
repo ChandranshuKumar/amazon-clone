@@ -37,8 +37,17 @@ stream.on('data', () => count++);
 stream.on('close', () => console.log(`Indexed ${count} documents`));
 stream.on('error', (err) => console.log(err));
 
+router.get("/cart", (req, res, next) => {
+    Cart.findOne({ owner: req.user._id })
+        .populate('items.item')
+        .exec((err, foundCart) => {
+            if (err) return next(err);
+            res.render('main/cart', { foundCart: foundCart, message: req.flash('remove') });
+        });
+});
+
 router.post("/cart", (req, res, next) => {
-    Cart.findOne({owner: req.user._id}, (err, cart) => {
+    Cart.findOne({ owner: req.user._id }, (err, cart) => {
         cart.items.push({
             item: req.body.product_id,
             price: parseFloat(req.body.priceValue),
@@ -48,7 +57,20 @@ router.post("/cart", (req, res, next) => {
         cart.total = (cart.total + parseFloat(req.body.priceValue)).toFixed(2);
 
         cart.save(err => {
-            if(err) return next(err);
+            if (err) return next(err);
+            res.redirect("/cart");
+        });
+    });
+});
+
+router.post("/remove", (req, res, next) => {
+    Cart.findOne({ owner: req.user._id }, (err, foundCart) => {
+        foundCart.items.pull(String(req.body.item));
+
+        foundCart.total = (foundCart.total - parseFloat(req.body.price)).toFixed(2);
+        foundCart.save(err => {
+            if (err) return next(err);
+            req.flash('remove', "Successfully removed the product");
             res.redirect("/cart");
         });
     });
