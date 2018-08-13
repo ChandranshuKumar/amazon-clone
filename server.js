@@ -12,6 +12,8 @@ const secret = require('./config/secret');
 const User = require("./models/user");
 const Category = require("./models/category");
 
+const cartLength = require("./middlewares/middlewares");
+
 const app = express();
 
 mongoose.connect(secret.database, { useNewUrlParser: true }, (err) => {
@@ -34,7 +36,7 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.set("view engine", "ejs");
-app.use(function(req, res, next){
+app.use((req, res, next) => {
     res.locals.user = req.user;
     next();
 });
@@ -45,6 +47,7 @@ app.use((req, res, next) => {
         next();
     });
 });
+app.use(cartLength);
 
 const mainRoutes = require("./routes/main");
 const userRoutes = require("./routes/user");

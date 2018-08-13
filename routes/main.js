@@ -2,6 +2,7 @@ const router = require('express').Router();
 
 const User = require("../models/user");
 const Product = require("../models/product");
+const Cart = require("../models/cart");
 
 paginate = (req, res, next) => {
     const perPage = 9;
@@ -22,12 +23,10 @@ paginate = (req, res, next) => {
 
 Product.createMapping((err, mapping) => {
     if (err) {
-        console.log("error creating Mapping");
-        console.log(err);
+        console.log("error creating Mapping"); console.log(err);
     }
     else {
-        console.log("Mapping created");
-        console.log(mapping);
+        console.log("Mapping created"); console.log(mapping);
     }
 });
 
@@ -37,6 +36,23 @@ let count = 0;
 stream.on('data', () => count++);
 stream.on('close', () => console.log(`Indexed ${count} documents`));
 stream.on('error', (err) => console.log(err));
+
+router.post("/cart", (req, res, next) => {
+    Cart.findOne({owner: req.user._id}, (err, cart) => {
+        cart.items.push({
+            item: req.body.product_id,
+            price: parseFloat(req.body.priceValue),
+            quantity: parseInt(req.body.quantity)
+        });
+
+        cart.total = (cart.total + parseFloat(req.body.priceValue)).toFixed(2);
+
+        cart.save(err => {
+            if(err) return next(err);
+            res.redirect("/cart");
+        });
+    });
+});
 
 router.post("/search", (req, res) => {
     res.redirect("/search?q=" + req.body.q)
@@ -82,7 +98,7 @@ router.get('/products/:id', (req, res, next) => {
         });
 });
 
-router.get('/product/:id', (req, res, next) => {
+router.get('/product/:id', (req, res) => {
     Product.findById({ _id: req.params.id }, (err, product) => {
         if (err) return next(err);
         res.render("main/product", { product: product });
