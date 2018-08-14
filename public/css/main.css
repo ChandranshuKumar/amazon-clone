@@ -10,6 +10,7 @@ body {
 
 #navbar {
     position: relative;
+    max-height: 30px;
 
 }
 
@@ -24,3 +25,7 @@ body {
 .product-image {
     width: 100%;
 }
+
+/* #myModal{
+    position: absolute;
+} */

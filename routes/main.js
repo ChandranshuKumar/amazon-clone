@@ -1,6 +1,7 @@
 const router = require('express').Router();
+const stripe = require("stripe")('sk_test_LSiYH30LOsGLpNEgzMZyLaOh');
 
-const User = require("../models/user");
+// const User = require("../models/user");
 const Product = require("../models/product");
 const Cart = require("../models/cart");
 
@@ -120,11 +121,26 @@ router.get('/products/:id', (req, res, next) => {
         });
 });
 
-router.get('/product/:id', (req, res) => {
+router.get('/product/:id', (req, res, next) => {
     Product.findById({ _id: req.params.id }, (err, product) => {
         if (err) return next(err);
         res.render("main/product", { product: product });
     });
+});
+
+router.post("/payment", (req, res, next) => {
+    const stripeToken = req.body.stripeToken;
+    const currentCharges = Math.round(req.body.stripeMoney * 100);
+    
+    stripe.customers.create({
+        source: stripeToken        
+    }).then(customer => {
+        return stripe.charges.create({
+            amount: currentCharges,
+            currency: 'usd',
+            customer: customer.id
+        })
+    }).catch(err => next(err));
 });
 
 module.exports = router;
