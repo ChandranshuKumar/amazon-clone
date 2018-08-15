@@ -26,6 +26,10 @@ body {
     width: 100%;
 }
 
-/* #myModal{
-    position: absolute;
-} */
+.panel-heading{
+    max-height: 45px;
+}
+
+#card{
+    margin-top: -25px;
+}
