@@ -1,4 +1,7 @@
 $(function(){
+
+    Stripe.setPublishableKey('pk_test_5FkgpGhtCXBOZkX55nqWMGcI');
+
     $('#search').keyup(function(){
         let search_term = $(this).val();
 
@@ -31,35 +34,55 @@ $(function(){
             error: error => console.log(error)
         });
     });
-});
 
-$(document).on('click', '#plus', function(e){
-    e.preventDefault();
-    let priceValue = parseFloat($('#priceValue').val());
-    let quantity = parseInt($('#quantity').val());
 
-    priceValue += parseFloat($('#priceHidden').val());
-    quantity += 1;
+    $(document).on('click', '#plus', function(e){
+        e.preventDefault();
+        let priceValue = parseFloat($('#priceValue').val());
+        let quantity = parseInt($('#quantity').val());
 
-    $('#quantity').val(quantity);
-    $('#priceValue').val(priceValue.toFixed(2));
-    $('#total').html(quantity);
-});
+        priceValue += parseFloat($('#priceHidden').val());
+        quantity += 1;
 
-$(document).on('click', '#minus', function(e){
-    e.preventDefault();
-    let priceValue = parseFloat($('#priceValue').val());
-    let quantity = parseInt($('#quantity').val());
+        $('#quantity').val(quantity);
+        $('#priceValue').val(priceValue.toFixed(2));
+        $('#total').html(quantity);
+    });
 
-    if(quantity == 1){
-        priceValue = $('#priceHidden').val();
-        quantity = 1;
-    } else {
-        priceValue -= parseFloat($('#priceHidden').val());
-        quantity -= 1;
-    }
-    
-    $('#quantity').val(quantity);
-    $('#priceValue').val(priceValue.toFixed(2));
-    $('#total').html(quantity);
+    $(document).on('click', '#minus', function(e){
+        e.preventDefault();
+        let priceValue = parseFloat($('#priceValue').val());
+        let quantity = parseInt($('#quantity').val());
+
+        if(quantity == 1){
+            priceValue = $('#priceHidden').val();
+            quantity = 1;
+        } else {
+            priceValue -= parseFloat($('#priceHidden').val());
+            quantity -= 1;
+        }
+        
+        $('#quantity').val(quantity);
+        $('#priceValue').val(priceValue.toFixed(2));
+        $('#total').html(quantity);
+    });
+
+    stripeResponseHandler = (status, response) => {
+        const $form = $('#payment-form');
+        if(response.error){
+            $form.find('.payment-error').text(response.error.message);
+            $form.find('#submit').prop('disabled', false);
+        } else {
+            const token = response.id;
+            $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+            $form.get(0).submit();
+        }
+    };
+
+    $('#payment-form').submit(event => {
+        $form.find('#submit').prop('disabled', true);
+        Stripe.card.createToken($form, stripeResponseHandler);
+        return false;
+    });
+
 });

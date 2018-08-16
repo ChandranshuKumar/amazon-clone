@@ -27,7 +27,7 @@
                                 </div>
                                 <div class="col-md-3">
                                     <p>Quantity:<%= foundCart.items[i].quantity %></p>
-                                    <p>Rs. <%= foundCart.items[i].price %></p>
+                                    <p id="rupee">₹<%= foundCart.items[i].price %></p>
 
                                     <form action="/remove" method="POST">
                                         <input type="hidden" name="item" value="<%= foundCart.items[i]._id %>">
@@ -46,9 +46,7 @@
             <div class="col-md-3">
                 <div class="list-group">
                     <span class="list-group-item">
-                        <h4>Total: Rs.
-                            <span class="totalPrice"><%= foundCart.total %></span>
-                        </h4>
+                        <h4 id="title">Total: ₹<span class="totalPrice"><%= foundCart.total %></span></h4>
                         <div class="form-group">
                             <input type="hidden" value="<%= foundCart.total %>">
                             <button
@@ -84,7 +82,8 @@
                                     </div>
                                 </div>
                                 <div class="panel-body">
-                                    <form role="form" id="payment-form" method="POST" action="javascript:void(0);">
+                                    <form id="payment-form" action="/payment" method="POST" >
+                                        <input type="hidden" name="stripeMoney" value="<%= foundCart.total %>">
                                         <div class="row">
                                             <div class="col-xs-12">
                                                 <div class="form-group">
@@ -117,15 +116,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-xs-12">
-                                                <div class="form-group">
-                                                    <label for="couponCode">COUPON CODE</label>
-                                                    <input type="text" class="form-control" name="couponCode" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-xs-12">
-                                                <button class="subscribe btn btn-success btn-lg btn-block" type="button">Start Subscription</button>
+                                                <input id="submit" name="submit" class="btn btn-success btn-lg btn-block" type="submit" value="Pay ₹<%= foundCart.total %>"></input>
                                             </div>
                                         </div>
                                         <div class="row" style="display:none;">
