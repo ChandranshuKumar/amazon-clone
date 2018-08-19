@@ -138,8 +138,7 @@ router.post("/payment", (req, res, next) => {
             return stripe.charges.create({
                 amount: currentCharges,
                 currency: 'usd',
-                customer: customer.id,
-                source: stripeToken
+                customer: customer.id
             });
         }).then(charge => {
             async.waterfall([
@@ -150,7 +149,10 @@ router.post("/payment", (req, res, next) => {
                 },
                 (cart, callback) => {
                     User.findOne({ _id: req.user._id }, (err, user) => {
-                        if (user) {
+                        if(err){
+                            console.log(err);
+                        } 
+                        else if (user) {
                             for (let i = 0; i < cart.items.length; i++) {
                                 user.history.push({
                                     item: cart.items[i].item,
@@ -166,15 +168,19 @@ router.post("/payment", (req, res, next) => {
                 },
                 user => {
                     Cart.update({ owner: user._id }, { $set: { items: [], total: 0 } }, (err, updated) => {
-                        if (updated) {
+                        if(err){
+                            console.log(err);
+                        }
+                        else if (updated) {
                             res.redirect("/profile");
                         }
                     });
                 }
             ]);
-        })
-        .catch(err => next(err));
-        res.redirect("/cart");
+        }).catch(err => {
+            console.log(err);
+            res.redirect("/cart");
+        });
 });
 
 module.exports = router;
