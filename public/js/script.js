@@ -1,5 +1,3 @@
-import { Spinner } from "./spin";
-
 $(function(){
 
     Stripe.setPublishableKey('pk_test_5FkgpGhtCXBOZkX55nqWMGcI');
